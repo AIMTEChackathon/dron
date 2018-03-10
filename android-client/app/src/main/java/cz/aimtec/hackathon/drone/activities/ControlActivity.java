@@ -4,10 +4,14 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -15,11 +19,16 @@ import cz.aimtec.hackathon.drone.R;
 import cz.aimtec.hackathon.drone.connectivity.AsyncHttpResponseHandlerEmpty;
 import cz.aimtec.hackathon.drone.connectivity.DBConnector;
 import cz.aimtec.hackathon.drone.connectivity.SewioConnector;
+import cz.aimtec.hackathon.drone.connectivity.SewioWebSocketConnector;
+import cz.aimtec.hackathon.drone.connectivity.SewioWebSocketListener;
 import cz.aimtec.hackathon.drone.drone.DefaultBebopAdapter;
 import cz.aimtec.hackathon.drone.drone.IBebopListener;
+import cz.aimtec.hackathon.drone.models.Point3D;
 import cz.aimtec.hackathon.drone.models.Position;
+import cz.aimtec.hackathon.drone.models.SewioWebsocketMessageFeed;
 import cz.aimtec.hackathon.drone.stocktaking.StockTakingDispatcher;
 import cz.msebera.android.httpclient.Header;
+import okhttp3.WebSocket;
 
 /**
  * Activity for testing
@@ -30,6 +39,7 @@ public class ControlActivity extends ADroneActivity
     private StockTakingDispatcher stockTakingDispatcher;
     private SewioConnector sewioConnector = new SewioConnector();
     private DBConnector dbConnector = new DBConnector();
+    private SewioWebSocketConnector sewioWebSocketConnector = new SewioWebSocketConnector();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,6 +53,19 @@ public class ControlActivity extends ADroneActivity
         drone.setMaxTilt(20);
 
         stockTakingDispatcher = new StockTakingDispatcher(this, sewioConnector, dbConnector, drone);
+
+        sewioWebSocketConnector.connect(new SewioWebSocketListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                super.onMessage(webSocket, text);
+                Gson gson = new Gson();
+                SewioWebsocketMessageFeed response = gson.fromJson(text, SewioWebsocketMessageFeed.class);
+                Point3D point = response.getPoint();
+
+                stockTakingDispatcher.onCurrentDronePositionChanged(point);
+            }
+        });
 
         sewioConnector.getModels(new SewioConnector.AsyncSewioResponseHandler() {
             @Override

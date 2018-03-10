@@ -85,4 +85,8 @@ public class StockTakingDispatcher {
     public void setPositions(List<Position> positions) {
         this.positions = positions;
     }
+
+    public void onCurrentDronePositionChanged(Point3D point) {
+        actualDronPosition = point;
+    }
 }
