@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.connectivity.SewioConnector;
 import cz.aimtec.hackathon.drone.drone.DefaultBebopAdapter;
 import cz.aimtec.hackathon.drone.drone.IBebopListener;
 
@@ -27,6 +28,14 @@ public class ControlActivity extends ADroneActivity
         drone.setMaxRotationSpeed(90);
         drone.setMaxVerticalSpeed(3);
         drone.setMaxTilt(20);
+
+        SewioConnector connector = new SewioConnector();
+        connector.getModels(new SewioConnector.AsyncSewioResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
+                makeToast("Received response: " + responseText);
+            }
+        });
     }
 
     @Override

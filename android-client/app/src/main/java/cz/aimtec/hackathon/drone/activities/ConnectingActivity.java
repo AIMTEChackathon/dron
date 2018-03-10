@@ -30,10 +30,10 @@ public class ConnectingActivity extends AppCompatActivity
 {
 
     //private static final Class<?> DEFAULT_CLASS =  BarcodeActivity.class;
-    //private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
+    private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
     //private static final Class<?> DEFAULT_CLASS = VideoActivity.class;
     //private static final Class<?> DEFAULT_CLASS = StreamProcessingActivity.class;
-    private static final Class<?> DEFAULT_CLASS = DemoActivity.class;
+    //private static final Class<?> DEFAULT_CLASS = DemoActivity.class;
 
     // this block loads the native libraries
     // it is mandatory
