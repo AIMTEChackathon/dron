@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.connectivity.SewioWebSocketListener;
 import cz.aimtec.hackathon.drone.drone.DroneDiscoverer;
 import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -33,10 +34,13 @@ import cz.aimtec.hackathon.drone.drone.DroneDiscoverer;
 import cz.aimtec.hackathon.drone.models.Package;
 import cz.aimtec.hackathon.drone.models.VoiceCommand;
 import cz.msebera.android.httpclient.Header;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
 
 public class ConnectingActivity extends AppCompatActivity
 {
-
+    private static final String WEBSOCKET_URI = "ws://192.168.90.54:8080";
     //private static final Class<?> DEFAULT_CLASS =  BarcodeActivity.class;
     private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
     //private static final Class<?> DEFAULT_CLASS = VideoActivity.class;
@@ -98,6 +102,11 @@ public class ConnectingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
 
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(WEBSOCKET_URI).build();
+        SewioWebSocketListener listener = new SewioWebSocketListener();
+        WebSocket ws = client.newWebSocket(request, listener);
+        client.dispatcher().executorService().shutdown();
 
         SewioConnector connector = new SewioConnector();
         connector.getModels(new SewioConnector.AsyncSewioResponseHandler() {
