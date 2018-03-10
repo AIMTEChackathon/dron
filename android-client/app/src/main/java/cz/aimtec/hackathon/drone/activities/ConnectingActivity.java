@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.connectivity.SewioWebSocketListener;
 import cz.aimtec.hackathon.drone.drone.DroneDiscoverer;
 import com.parrot.arsdk.ARSDK;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
@@ -26,14 +27,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.connectivity.DBConnector;
+import cz.aimtec.hackathon.drone.drone.DroneDiscoverer;
+import cz.aimtec.hackathon.drone.models.VoiceCommand;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+
 public class ConnectingActivity extends AppCompatActivity
 {
-
+    private static final String WEBSOCKET_URI = "ws://192.168.90.54:8080";
     //private static final Class<?> DEFAULT_CLASS =  BarcodeActivity.class;
-    //private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
+    private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
     //private static final Class<?> DEFAULT_CLASS = VideoActivity.class;
     //private static final Class<?> DEFAULT_CLASS = StreamProcessingActivity.class;
-    private static final Class<?> DEFAULT_CLASS = DemoActivity.class;
+    //private static final Class<?> DEFAULT_CLASS = DemoActivity.class;
 
     // this block loads the native libraries
     // it is mandatory
@@ -89,6 +98,24 @@ public class ConnectingActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connecting);
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(WEBSOCKET_URI).build();
+        SewioWebSocketListener listener = new SewioWebSocketListener();
+        WebSocket ws = client.newWebSocket(request, listener);
+        client.dispatcher().executorService().shutdown();
+        DBConnector dbConnector = new DBConnector();
+
+
+
+        dbConnector.getVoiceCommands(new DBConnector.AsyncDBResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
+                VoiceCommand voiceCommand = (VoiceCommand) parsedJsonObject;
+                runOnUiThread(() -> Toast.makeText(ConnectingActivity.this, "received command" + voiceCommand.getCommand(), Toast.LENGTH_LONG ));
+            }
+        });
+
 
         mDroneDiscoverer = new DroneDiscoverer(this);
 
