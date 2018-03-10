@@ -4,7 +4,7 @@ package cz.aimtec.hackathon.drone.models;
  * Created by Jan Klik on 10.3.2018.
  */
 
-class Point3D {
+public class Point3D {
     private float x;
     private float y;
     private float z;

@@ -29,11 +29,8 @@ import java.util.Set;
 
 import cz.aimtec.hackathon.drone.R;
 import cz.aimtec.hackathon.drone.connectivity.DBConnector;
-import cz.aimtec.hackathon.drone.connectivity.SewioConnector;
 import cz.aimtec.hackathon.drone.drone.DroneDiscoverer;
-import cz.aimtec.hackathon.drone.models.Package;
 import cz.aimtec.hackathon.drone.models.VoiceCommand;
-import cz.msebera.android.httpclient.Header;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
@@ -107,43 +104,9 @@ public class ConnectingActivity extends AppCompatActivity
         SewioWebSocketListener listener = new SewioWebSocketListener();
         WebSocket ws = client.newWebSocket(request, listener);
         client.dispatcher().executorService().shutdown();
-
-        SewioConnector connector = new SewioConnector();
-        connector.getModels(new SewioConnector.AsyncSewioResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
-                runOnUiThread(() -> Toast.makeText(ConnectingActivity.this, "Received response: " + responseText, Toast.LENGTH_LONG).show());
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                String response = new String(responseBody);
-                runOnUiThread(() -> Toast.makeText(ConnectingActivity.this, "Received response: " + statusCode + response, Toast.LENGTH_LONG).show());
-            }
-        });
-
         DBConnector dbConnector = new DBConnector();
-        dbConnector.deleteAllPackages(new DBConnector.AsyncDBResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                // do nothing
-            }
-            @Override
-            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
-                // do nothing
-            }
-        });
 
-        dbConnector.postPackage(this, new Package("1000001", "A12", 2), new DBConnector.AsyncDBResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                // do nothing
-            }
-            @Override
-            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
-                // do nothing
-            }
-        });
+
 
         dbConnector.getVoiceCommands(new DBConnector.AsyncDBResponseHandler() {
             @Override

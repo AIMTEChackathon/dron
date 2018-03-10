@@ -47,14 +47,14 @@ public class DBConnector {
         }
     }
 
-    public void getVoiceCommands(AsyncDBResponseHandler responseHandler) {
+    public void getVoiceCommands(AsyncHttpResponseHandler responseHandler) {
         RestClient restClient = new RestClient(API_URL);
 
         RequestParams params = new RequestParams();
         restClient.get("/command", params, responseHandler);
     }
 
-    public void postPackage(Context context, Package pPackage, AsyncDBResponseHandler responseHandler) {
+    public void postPackage(Context context, Package pPackage, AsyncHttpResponseHandler responseHandler) {
         RestClient restClient = new RestClient(API_URL);
 
         Gson gson = new Gson();
@@ -63,7 +63,7 @@ public class DBConnector {
         restClient.post(context,"/package", content, responseHandler);
     }
 
-    public void deleteAllPackages(AsyncDBResponseHandler responseHandler) {
+    public void deleteAllPackages(AsyncHttpResponseHandler responseHandler) {
         RestClient restClient = new RestClient(API_URL);
 
         RequestParams params = new RequestParams();

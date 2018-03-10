@@ -7,17 +7,30 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.connectivity.AsyncHttpResponseHandlerEmpty;
+import cz.aimtec.hackathon.drone.connectivity.DBConnector;
 import cz.aimtec.hackathon.drone.connectivity.SewioConnector;
 import cz.aimtec.hackathon.drone.drone.DefaultBebopAdapter;
 import cz.aimtec.hackathon.drone.drone.IBebopListener;
+import cz.aimtec.hackathon.drone.models.Position;
+import cz.aimtec.hackathon.drone.stocktaking.StockTakingDispatcher;
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Activity for testing
  * */
 public class ControlActivity extends ADroneActivity
 {
+
+    private StockTakingDispatcher stockTakingDispatcher;
+    private SewioConnector sewioConnector = new SewioConnector();
+    private DBConnector dbConnector = new DBConnector();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -29,6 +42,23 @@ public class ControlActivity extends ADroneActivity
         drone.setMaxVerticalSpeed(3);
         drone.setMaxTilt(20);
 
+        stockTakingDispatcher = new StockTakingDispatcher(this, sewioConnector, dbConnector, drone);
+
+        sewioConnector.getModels(new SewioConnector.AsyncSewioResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
+                stockTakingDispatcher.setPositions((List<Position>) parsedJsonObject);
+                runOnUiThread(() -> Toast.makeText(ControlActivity.this, "Received response: " + responseText, Toast.LENGTH_LONG).show());
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String response = new String(responseBody);
+                runOnUiThread(() -> Toast.makeText(ControlActivity.this, "Received response: " + statusCode + response, Toast.LENGTH_LONG).show());
+            }
+        });
+
+        dbConnector.deleteAllPackages(new AsyncHttpResponseHandlerEmpty());
     }
 
     @Override
@@ -107,6 +137,11 @@ public class ControlActivity extends ADroneActivity
     {
         System.out.println("TAKE OFF clicked");
         drone.takeOff();
+    }
+
+    public void startStocktakingClick(View v) {
+        System.out.println("Start stocktaking clicked");
+        stockTakingDispatcher.startStocktaking();
     }
 
     /**

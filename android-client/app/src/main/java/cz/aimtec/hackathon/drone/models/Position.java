@@ -34,4 +34,28 @@ public class Position {
 
         }
     }
+
+    public Point3D getCenterPoint() {
+        return centerPoint;
+    }
+
+    public void setCenterPoint(Point3D centerPoint) {
+        this.centerPoint = centerPoint;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

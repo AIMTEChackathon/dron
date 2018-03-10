@@ -60,7 +60,7 @@ public class SewioConnector {
         }
     }
 
-    public void getModels(AsyncSewioResponseHandler responseHandler) {
+    public void getModels(AsyncHttpResponseHandler responseHandler) {
         RestClient restClient = new RestClient(API_URL);
 
         RequestParams params = new RequestParams();
