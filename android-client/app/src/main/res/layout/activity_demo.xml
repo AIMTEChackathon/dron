@@ -16,30 +16,16 @@
         android:layout_alignParentTop="true" />
 
     <Button
-        android:id="@+id/startBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="22dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="18dp"
-        android:background="@android:color/holo_green_dark"
-        android:onClick="startClick"
-        android:text="Demo1" />
-
-    <Button
         android:id="@+id/button17"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/startBtn"
-        android:layout_alignBottom="@+id/startBtn"
+        android:layout_alignBaseline="@+id/demoButton"
+        android:layout_alignBottom="@+id/demoButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="13dp"
-        android:layout_marginRight="13dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:background="@color/common_signin_btn_default_background"
         android:onClick="emergency"
         android:text="STOP" />
@@ -74,15 +60,26 @@
         android:id="@+id/demoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/startBtn"
-        android:layout_alignBottom="@+id/startBtn"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_toEndOf="@+id/startBtn"
-        android:layout_toRightOf="@+id/startBtn"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="17dp"
         android:background="@android:color/holo_green_dark"
         android:onClick="demo2Click"
-        android:text="Demo2"
+        android:text="Demo"
         android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/batteryView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/demoButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/demoButton"
+        android:layout_marginBottom="30dp"
+        android:text="TextView"
+        android:textColor="@android:color/background_light" />
 
 </RelativeLayout>

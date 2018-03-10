@@ -65,4 +65,25 @@ public class EmptyBebopAdapter implements IBebopListener
     {
 
     }
+
+    @Override
+    public void positionChanged(double latitude, double longitude, double altitude) {
+
+    }
+
+    @Override
+    public void speedChanged(double latitude, double longitude, double altitude) {
+
+    }
+
+    @Override
+    public void attitudeChanged(double roll, double pitch, double yaw){
+
+    }
+
+    @Override
+    public void altitudeChanged(double altitude){
+
+    }
+
 }

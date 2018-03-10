@@ -295,7 +295,7 @@ public class DemoActivity extends ADroneActivity implements IFrameListener
             public void run()
             {
                 runOnUiThread(() -> findViewById(R.id.demoButton).setEnabled(false));
-                demoExecutor.run2advanced();
+                demoExecutor.run();
                 runOnUiThread(() -> findViewById(R.id.demoButton).setEnabled(true));
             }
         };

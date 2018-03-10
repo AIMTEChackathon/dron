@@ -84,4 +84,9 @@ public interface IBebopListener
      * @param mediaName the name of the media
      */
     void onDownloadComplete(String mediaName);
+
+    void positionChanged(double latitude, double longitude, double altitude);
+    void speedChanged(double latitude, double longitude, double altitude);
+    void attitudeChanged(double roll, double pitch, double yaw);
+    void altitudeChanged(double altitude);
 }

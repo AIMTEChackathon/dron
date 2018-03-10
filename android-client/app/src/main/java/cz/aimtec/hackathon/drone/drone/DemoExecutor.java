@@ -48,89 +48,46 @@ public class DemoExecutor implements IBitmapResolverListener
     }
 
     /**
-     * Runs set of commands by using SDK relative moves.
-     * At first, it takes off and waits on QR code "DO THE SHOW"
-     * <p>
-     * On every command, it blocks its thread and waits until being notified by drone event.
-     */
-    public void run()
-    {
-        this.state = EXECUTION_STATE.RUNNING;
-
-        takeOff();
-
-        //active waiting for QR received
-        while (this.state != EXECUTION_STATE.FOR_EXECUTE)
-        {
-            sleep(500);
-        }
-
-        //setting notify token for RELATIVE_MOVE_ENDED
-        drone.setMoveNotifyToken(moveNotifyToken);
-        //count of parts for progressbar
-        int parts = 6;
-
-        demoActivity.updateProgressBar(0, parts);
-
-        drone.moveUp(0.5);
-        demoActivity.updateProgressBar(1, parts);
-
-        drone.moveLeft(0.5);
-        demoActivity.updateProgressBar(2, parts);
-
-        drone.moveRight(0.5);
-        demoActivity.updateProgressBar(3, parts);
-
-        drone.turnLeft(6.2);
-        demoActivity.updateProgressBar(4, parts);
-
-        drone.turnRight(6.2);
-        demoActivity.updateProgressBar(5, parts);
-
-        land();
-        demoActivity.updateProgressBar(6, parts);
-
-        this.state = EXECUTION_STATE.FINISHED;
-    }
-
-    /**
      * Runs set of commands without using relative moves (just changing ROLL, GAZ, YAW parameters) and waiting
      * At first, it takes off and waits on QR code "DO THE SHOW"
      */
-    public void run2advanced()
+    public void run()
     {
+        //180 per second
+        drone.setMaxRotationSpeed(180);
+        //3 m per sec
+        drone.setMaxVerticalSpeed(3);
+        //20 angles tilt
+        drone.setMaxTilt(20);
+
         //count of parts for progressbar
         int parts = 6;
         this.state = EXECUTION_STATE.RUNNING;
 
         drone.takeOff();
-        sleep(750);
+        sleep(1000);
 
         //active waiting for QR received
-        while (this.state != EXECUTION_STATE.FOR_EXECUTE)
-        {
-            sleep(500);
-        }
+        //while (this.state != EXECUTION_STATE.FOR_EXECUTE)
+        //{
+        //    sleep(500);
+        //}
 
-        demoActivity.updateProgressBar(0, parts);
 
-        moveUp();
-        demoActivity.updateProgressBar(1, parts);
+        resetGRYF();
+        moveUp2();
 
-        moveLeft();
-        demoActivity.updateProgressBar(2, parts);
+        //moveLeft();
+        //moveForward();
+        //moveRight();
+        //moveBackward();
 
-        moveRight();
-        demoActivity.updateProgressBar(3, parts);
-
-        turnLeft();
-        demoActivity.updateProgressBar(4, parts);
-
-        turnRight();
-        demoActivity.updateProgressBar(5, parts);
+        //moveDown();
+        //turnLeft();
+        //turnRight();
+        //turnLeftFlag();
 
         drone.land();
-        demoActivity.updateProgressBar(6, parts);
 
         this.state = EXECUTION_STATE.FINISHED;
     }
@@ -163,7 +120,7 @@ public class DemoExecutor implements IBitmapResolverListener
         System.out.println("TURN RIGHT");
 
         drone.setYaw((byte) 100);
-        drone.setFlag((byte) 1);
+        drone.setFlag((byte) 0);
         sleep(1000);
         resetGRYF();
     }
@@ -176,7 +133,17 @@ public class DemoExecutor implements IBitmapResolverListener
         System.out.println("TURN LEFT");
 
         drone.setYaw((byte) -100);
-        drone.setFlag((byte) 1);
+        drone.setFlag((byte) 0);
+        sleep(1000);
+        resetGRYF();
+    }
+
+    private void turnLeftFlag()
+    {
+        System.out.println("TURN LEFT");
+
+        drone.setYaw((byte) -100);
+        drone.setFlag((byte) 0);
         sleep(1000);
         resetGRYF();
     }
@@ -190,7 +157,7 @@ public class DemoExecutor implements IBitmapResolverListener
         drone.setYaw((byte) 0);
         drone.setRoll((byte) 0);
         drone.setFlag((byte) 0);
-        sleep(1000);
+        sleep(1750);
     }
 
     /**
@@ -202,7 +169,7 @@ public class DemoExecutor implements IBitmapResolverListener
 
         drone.setRoll((byte) 50);
         drone.setFlag((byte) 1);
-        sleep(750);
+        sleep(800);
         resetGRYF();
     }
 
@@ -215,7 +182,7 @@ public class DemoExecutor implements IBitmapResolverListener
 
         drone.setRoll((byte) -50);
         drone.setFlag((byte) 1);
-        sleep(750);
+        sleep(800);
         resetGRYF();
     }
 
@@ -227,8 +194,18 @@ public class DemoExecutor implements IBitmapResolverListener
         System.out.println("MOVE UP");
 
         drone.setGaz((byte) 50);
-        drone.setFlag((byte) 1);
+        drone.setFlag((byte) 0);
         sleep(600);
+        resetGRYF();
+    }
+
+    private void moveUp2()
+    {
+        System.out.println("MOVE UP");
+
+        drone.setGaz((byte) 50);
+        drone.setFlag((byte) 0);
+        sleep(1000);
         resetGRYF();
     }
 
@@ -240,6 +217,32 @@ public class DemoExecutor implements IBitmapResolverListener
         System.out.println("MOVE DOWN");
 
         drone.setGaz((byte) -50);
+        drone.setFlag((byte) 0);
+        sleep(1000);
+        resetGRYF();
+    }
+
+    /**
+     * Moves drone forwad
+     */
+    private void moveForward()
+    {
+        System.out.println("MOVE FORWARD");
+
+        drone.setPitch((byte) 50);
+        drone.setFlag((byte) 1);
+        sleep(1000);
+        resetGRYF();
+    }
+
+    /**
+     * Moves drone forward
+     */
+    private void moveBackward()
+    {
+        System.out.println("MOVE BACKWARD");
+
+        drone.setPitch((byte) -50);
         drone.setFlag((byte) 1);
         sleep(1000);
         resetGRYF();
@@ -255,6 +258,7 @@ public class DemoExecutor implements IBitmapResolverListener
             Thread.sleep(i);
         } catch (InterruptedException e)
         {
+            e.printStackTrace();
         }
     }
 
