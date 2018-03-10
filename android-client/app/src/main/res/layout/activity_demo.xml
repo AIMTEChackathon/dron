@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cz.aimtec.hackathon.drone.activities.DemoActivity"
+    android:id="@+id/activity_video">
+
+    <cz.aimtec.hackathon.drone.views.StreamProcessingView
+        android:id="@+id/videoStreamView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:id="@+id/startBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="18dp"
+        android:background="@android:color/holo_green_dark"
+        android:onClick="startClick"
+        android:text="Demo1" />
+
+    <Button
+        android:id="@+id/button17"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startBtn"
+        android:layout_alignBottom="@+id/startBtn"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
+        android:background="@color/common_signin_btn_default_background"
+        android:onClick="emergency"
+        android:text="STOP" />
+
+    <Button
+        android:id="@+id/button19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button17"
+        android:layout_alignBottom="@+id/button17"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_toLeftOf="@+id/button17"
+        android:layout_toStartOf="@+id/button17"
+        android:background="@color/wallet_holo_blue_light"
+        android:onClick="landClick"
+        android:text="Land" />
+
+    <ProgressBar
+        android:id="@+id/demoProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/button17"
+        android:layout_alignLeft="@+id/startBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/button17"
+        android:layout_alignStart="@+id/startBtn"
+        android:layout_marginBottom="15dp" />
+
+    <Button
+        android:id="@+id/demoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/startBtn"
+        android:layout_alignBottom="@+id/startBtn"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@+id/startBtn"
+        android:layout_toRightOf="@+id/startBtn"
+        android:background="@android:color/holo_green_dark"
+        android:onClick="demo2Click"
+        android:text="Demo2"
+        android:visibility="visible" />
+
+</RelativeLayout>
