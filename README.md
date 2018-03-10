@@ -1,2 +1,2 @@
 # dron
-AimtecHackathon 2018 tým čmeláci
+AimtecHackathon 2018 tým čmeláci 
