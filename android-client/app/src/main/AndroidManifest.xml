@@ -22,12 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".activities.ControlActivity" />
         <activity
             android:name=".activities.StreamProcessingActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape" />
         <activity
             android:name=".activities.DemoActivity"
+            android:screenOrientation="landscape" />
+
+        <activity android:name=".activities.StorageScanActivity"
             android:screenOrientation="landscape"></activity>
     </application>
 
