@@ -1,5 +1,7 @@
 package cz.aimtec.hackathon.drone.connectivity;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -10,7 +12,9 @@ import com.loopj.android.http.RequestParams;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import cz.aimtec.hackathon.drone.models.Position;
 import cz.aimtec.hackathon.drone.models.SevioModel;
 import cz.msebera.android.httpclient.Header;
 
@@ -19,8 +23,10 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class SewioConnector {
+    private static final String API_URL = "http://192.168.90.54/sensmapserver/api";
 
     public abstract static class AsyncSewioResponseHandler extends AsyncHttpResponseHandler {
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
             try {
@@ -30,7 +36,12 @@ public class SewioConnector {
                 Gson gson = new Gson();
                 List<SevioModel> modelList = gson.fromJson(response, modelListType);
 
-                onSuccess(statusCode, modelList, response);
+                List<Position> positionList = modelList.parallelStream()
+                        .filter(m -> m.getName().startsWith("A"))
+                        .map(m -> new Position(m))
+                        .collect(Collectors.toList());
+
+                onSuccess(statusCode, positionList, response);
             } catch (Exception e) {
                 Log.e("REST", "onSuccess: ", e);
             }
@@ -42,6 +53,7 @@ public class SewioConnector {
         public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
             try {
                 String response = new String(responseBody);
+                Log.d("REST", "response" + response);
             } catch (Exception e) {
                 Log.e("REST", "onSuccess: ", e);
             }
@@ -49,10 +61,9 @@ public class SewioConnector {
     }
 
     public void getModels(AsyncSewioResponseHandler responseHandler) {
-        RestClient restClient = new RestClient();
+        RestClient restClient = new RestClient(API_URL);
 
         RequestParams params = new RequestParams();
-        params.add("X-ApiKey", "171555a8fe71148a165392904");
         restClient.get("/models", params, responseHandler);
     }
 }
