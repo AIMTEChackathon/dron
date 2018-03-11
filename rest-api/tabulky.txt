@@ -1,0 +1,7 @@
+table - primary key - type
+
+Command - id - string
+LastPostition - id - string
+Package - packageId - string
+PackagePosition - id - string
+Position - id - string
