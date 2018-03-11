@@ -89,4 +89,26 @@ public class StockTakingDispatcher {
     public void onCurrentDronePositionChanged(Point3D point) {
         actualDronPosition = point;
     }
+
+    private Point3D calculateMove(Point3D actualPosition, Point3D targetPosition){
+        float x = targetPosition.getX() - actualPosition.getX();
+        float y = targetPosition.getY() - actualPosition.getY();
+        float z = targetPosition.getZ() - actualPosition.getZ();
+
+        return new Point3D(x/2, y/2, z/2);
+    }
+
+    private float distance(Point3D actualPosition, Point3D targetPosition){
+        float x = targetPosition.getX() - actualPosition.getX();
+        float y = targetPosition.getY() - actualPosition.getY();
+        float z = targetPosition.getZ() - actualPosition.getZ();
+
+        float x2 = x*x;
+        float y2 = y*y;
+        float z2 = z*z;
+
+        float sum = x2 + y2 + z2;
+
+        return (float) Math.sqrt(sum);
+    }
 }
