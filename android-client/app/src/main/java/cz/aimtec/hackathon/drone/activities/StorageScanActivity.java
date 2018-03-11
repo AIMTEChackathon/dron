@@ -192,6 +192,9 @@ public class StorageScanActivity extends ADroneActivity implements IFrameListene
                     @Override
                     public void run() {
                         ((TextView) findViewById(R.id.altitudeTextView)).setText("Alt: " + altitude);
+                        Point3D position = new Point3D(0,0, (float) altitude);
+
+                        dbConnector.postPosition(getCurrentContext(), position, new AsyncHttpResponseHandlerEmpty());
                     }
                 });
             }

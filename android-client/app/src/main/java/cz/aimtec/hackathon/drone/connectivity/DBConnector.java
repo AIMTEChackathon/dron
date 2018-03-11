@@ -8,6 +8,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import cz.aimtec.hackathon.drone.models.Package;
+import cz.aimtec.hackathon.drone.models.Point3D;
 import cz.aimtec.hackathon.drone.models.VoiceCommand;
 import cz.msebera.android.httpclient.Header;
 
@@ -68,5 +69,14 @@ public class DBConnector {
 
         RequestParams params = new RequestParams();
         restClient.delete("/package", params, responseHandler);
+    }
+
+    public void postPosition(Context context, Point3D point3D, AsyncHttpResponseHandler responseHandler){
+        RestClient restClient = new RestClient(API_URL);
+
+        Gson gson = new Gson();
+        String content = gson.toJson(point3D);
+
+        restClient.post(context,"/position", content, responseHandler);
     }
 }
