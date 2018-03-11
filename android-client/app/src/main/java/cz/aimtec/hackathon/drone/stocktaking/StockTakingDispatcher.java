@@ -22,6 +22,24 @@ public class StockTakingDispatcher {
     private final SewioConnector sewioConnector;
     private final DBConnector dbConnector;
     private BebopDrone drone;
+    private static final float DISTANCE_DELTA = 0.2f;
+
+    private Runnable positionCorrector = new Runnable() {
+        @Override
+        public void run() {
+            while(wantedPositionIndex != -1){
+                Position wantedPosition = getPositions().get(wantedPositionIndex);
+                Point3D targetPosition = wantedPosition.getCenterPoint();
+                Point3D actualPosition = actualDronPosition;
+                float distanceToTarget = distance(actualPosition, targetPosition);
+
+                if(distanceToTarget > DISTANCE_DELTA) {
+                    Point3D moveToPosition = calculateMove(actualPosition, targetPosition);
+                    drone.moveToRelativePosition(moveToPosition.getX(), moveToPosition.getY(), moveToPosition.getZ(), 0);
+                }
+            }
+        }
+    };
 
     private List<Position> positions;
 
@@ -109,6 +127,6 @@ public class StockTakingDispatcher {
 
         float sum = x2 + y2 + z2;
 
-        return (float) Math.sqrt(sum);
+        return (float) Math.abs(Math.sqrt(sum));
     }
 }
