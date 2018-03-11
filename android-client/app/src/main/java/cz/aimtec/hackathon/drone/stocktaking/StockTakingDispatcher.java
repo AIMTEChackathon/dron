@@ -8,6 +8,7 @@ import cz.aimtec.hackathon.drone.connectivity.AsyncHttpResponseHandlerEmpty;
 import cz.aimtec.hackathon.drone.connectivity.DBConnector;
 import cz.aimtec.hackathon.drone.connectivity.SewioConnector;
 import cz.aimtec.hackathon.drone.drone.BebopDrone;
+import cz.aimtec.hackathon.drone.drone.IBitmapResolverListener;
 import cz.aimtec.hackathon.drone.models.Package;
 import cz.aimtec.hackathon.drone.models.Point3D;
 import cz.aimtec.hackathon.drone.models.Position;
@@ -16,7 +17,7 @@ import cz.aimtec.hackathon.drone.models.Position;
  * Created by Jan Klik on 10.3.2018.
  */
 
-public class StockTakingDispatcher {
+public class StockTakingDispatcher implements IBitmapResolverListener {
 
     private Context context;
     private final SewioConnector sewioConnector;
@@ -33,11 +34,21 @@ public class StockTakingDispatcher {
 
     private PositionReachedListener positionReachedListener;
 
+    private String lastQrResult;
+    private String qrResult;
+    private Object qrLockToken;
+    private boolean isLocked;
+
     public StockTakingDispatcher(Context context, SewioConnector sewioConnector, DBConnector dbConnector, BebopDrone drone) {
         this.context = context;
         this.sewioConnector = sewioConnector;
         this.dbConnector = dbConnector;
         this.drone = drone;
+
+        qrLockToken = new Object();
+        qrResult = "";
+        lastQrResult = "";
+        isLocked = true;
     }
 
     public void startStocktaking() {
@@ -62,10 +73,14 @@ public class StockTakingDispatcher {
     }
 
     private void scanQRCode(Position position, int positionIndex) {
-        // TODO scan QR code
-        if (true) {
-            labelScanned(new Package("fakeLabel", position.getName(), position.getId()), position, positionIndex);
-        }
+        //wait for qr code
+        pauseThread();
+
+        isLocked = true;
+        labelScanned(new Package(qrResult, position.getName(), position.getId()), position, positionIndex);
+        lastQrResult = qrResult;
+        qrResult = "";
+        isLocked = false;
     }
 
     public void labelScanned(Package label, Position position, int positionIndex) {
@@ -88,5 +103,42 @@ public class StockTakingDispatcher {
 
     public void onCurrentDronePositionChanged(Point3D point) {
         actualDronPosition = point;
+    }
+
+    /**
+     * Wakes up QR thread from waiting
+     */
+    public void notifyThread() {
+        try {
+            if (qrLockToken != null) {
+                synchronized (qrLockToken) {
+                    qrLockToken.notifyAll();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Nothing to notify");
+        }
+    }
+
+    /**
+     * Puts current thread to waiting, used by QR thread
+     */
+    public void pauseThread() {
+        try {
+            synchronized (qrLockToken) {
+                qrLockToken.wait();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void qrResolved(String result) {
+
+        if (!isLocked && lastQrResult.compareTo(result) != 0 && result.length() > 0) {
+            qrResult = result;
+            notifyThread();
+        }
     }
 }

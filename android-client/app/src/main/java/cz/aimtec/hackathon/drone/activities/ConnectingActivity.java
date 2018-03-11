@@ -31,9 +31,7 @@ import cz.aimtec.hackathon.drone.models.VoiceCommand;
 
 public class ConnectingActivity extends AppCompatActivity
 {
-    //private static final Class<?> DEFAULT_CLASS =  BarcodeActivity.class;
-    private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
-    //private static final Class<?> DEFAULT_CLASS = VideoActivity.class;
+    //private static final Class<?> DEFAULT_CLASS =  ControlActivity.class;
     //private static final Class<?> DEFAULT_CLASS = StreamProcessingActivity.class;
     private static final Class<?> DEFAULT_CLASS = StorageScanActivity.class;
     //private static final Class<?> DEFAULT_CLASS = DemoActivity.class;

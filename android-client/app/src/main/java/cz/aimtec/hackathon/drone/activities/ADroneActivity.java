@@ -55,6 +55,10 @@ public abstract class ADroneActivity extends AppCompatActivity
                 tv.setText("Drone: " + service.getName());
             }
         }
+
+        drone.setMaxRotationSpeed(90);
+        drone.setMaxVerticalSpeed(3);
+        drone.setMaxTilt(20);
     }
 
     public void makeToast(String message)

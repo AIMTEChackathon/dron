@@ -67,7 +67,7 @@
         android:layout_marginTop="17dp"
         android:background="@android:color/holo_green_dark"
         android:onClick="startClick"
-        android:text="Demo"
+        android:text="HACK!"
         android:visibility="visible" />
 
     <TextView

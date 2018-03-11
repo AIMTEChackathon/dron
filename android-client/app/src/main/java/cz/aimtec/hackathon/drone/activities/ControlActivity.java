@@ -35,7 +35,6 @@ import okhttp3.WebSocket;
  * */
 public class ControlActivity extends ADroneActivity
 {
-
     private StockTakingDispatcher stockTakingDispatcher;
     private SewioConnector sewioConnector = new SewioConnector();
     private DBConnector dbConnector = new DBConnector();
@@ -47,10 +46,6 @@ public class ControlActivity extends ADroneActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-
-        drone.setMaxRotationSpeed(90);
-        drone.setMaxVerticalSpeed(3);
-        drone.setMaxTilt(20);
 
         stockTakingDispatcher = new StockTakingDispatcher(this, sewioConnector, dbConnector, drone);
 
@@ -71,13 +66,13 @@ public class ControlActivity extends ADroneActivity
             @Override
             public void onSuccess(int statusCode, Object parsedJsonObject, String responseText) {
                 stockTakingDispatcher.setPositions((List<Position>) parsedJsonObject);
-                runOnUiThread(() -> Toast.makeText(ControlActivity.this, "Received response: " + responseText, Toast.LENGTH_LONG).show());
+                makeToast("Received response: " + responseText);
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 String response = new String(responseBody);
-                runOnUiThread(() -> Toast.makeText(ControlActivity.this, "Received response: " + statusCode + response, Toast.LENGTH_LONG).show());
+                makeToast("Received response: " + statusCode + response);
             }
         });
 
