@@ -1,6 +1,7 @@
 package cz.aimtec.hackathon.drone.stocktaking;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.List;
 
@@ -23,22 +24,39 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
     private final SewioConnector sewioConnector;
     private final DBConnector dbConnector;
     private BebopDrone drone;
-    private static final float DISTANCE_DELTA = 0.2f;
+    private static final float DISTANCE_DELTA_TOLLERANCE = 0.2f;
+    private Object actualPositionLock = new Object();
+    public volatile boolean isCorrectorRunning = false;
 
     private Runnable positionCorrector = new Runnable() {
         @Override
         public void run() {
-            while(wantedPositionIndex != -1){
-                Position wantedPosition = getPositions().get(wantedPositionIndex);
-                Point3D targetPosition = wantedPosition.getCenterPoint();
-                Point3D actualPosition = actualDronPosition;
-                float distanceToTarget = distance(actualPosition, targetPosition);
+            isCorrectorRunning = true;
+            while(wantedDronPosition != null){
+                try {
+                    Point3D targetPosition;
+                    Point3D actualPosition;
+                    float distanceToTarget;
+                    synchronized (actualPositionLock) {
+                        targetPosition = wantedDronPosition;
+                        actualPosition = actualDronPosition;
+                        distanceToTarget = distance(actualPosition, targetPosition);
+                    }
 
-                if(distanceToTarget > DISTANCE_DELTA) {
-                    Point3D moveToPosition = calculateMove(actualPosition, targetPosition);
-                    drone.moveToRelativePosition(moveToPosition.getX(), moveToPosition.getY(), moveToPosition.getZ(), 0);
+                    if(distanceToTarget > DISTANCE_DELTA_TOLLERANCE) {
+                        Point3D moveToPosition = calculateMove(actualPosition, targetPosition);
+                        drone.moveToRelativePosition(moveToPosition.getX(), moveToPosition.getY(), moveToPosition.getZ(), 0);
+                        Thread.sleep(1000);
+                    } else {
+                        positionReached();
+                    }
+
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    Log.e("positionCorrector", "positionCorrector interrupted", e);
                 }
             }
+            isCorrectorRunning = false;
         }
     };
 
@@ -46,7 +64,7 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
 
     private int wantedPositionIndex;
 
-    //private Point3D wantedDronPosition;
+    private Point3D wantedDronPosition;
     private Point3D actualDronPosition;
     private float actualDronZPosition;
 
@@ -77,11 +95,15 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
         if (positionReachedListener != null) {
             Position position = positions.get(wantedPositionIndex);
             positionReachedListener.onPositionReached(position, position.getCenterPoint(), wantedPositionIndex);
+            positionReachedListener = null;
         }
     }
 
     private void goToPosition(Position position, int wantedPositionIndex) {
-        this.wantedPositionIndex = wantedPositionIndex;
+        synchronized (actualPositionLock) {
+            this.wantedPositionIndex = wantedPositionIndex;
+            this.wantedDronPosition = positions.get(wantedPositionIndex).getCenterPoint();
+        }
         positionReachedListener = new PositionReachedListener() {
             @Override
             public void onPositionReached(Position position, Point3D point, int positionIndex) {
@@ -107,6 +129,9 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
             int index = positionIndex + 1;
             goToPosition(positions.get(index), index);
         } else {
+            synchronized (actualPositionLock) {
+                wantedDronPosition = null;
+            }
             drone.land();
         }
     }
@@ -120,7 +145,23 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
     }
 
     public void onCurrentDronePositionChanged(Point3D point) {
-        actualDronPosition = point;
+        synchronized (actualPositionLock) {
+            if (actualDronPosition == null) {
+                actualDronPosition = point;
+            } else {
+                actualDronPosition.setX(point.getX());
+                actualDronPosition.setY(point.getY());
+            }
+        }
+        if (!isCorrectorRunning) {
+            Thread t = new Thread(positionCorrector);
+            t.start();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
     }
 
     private Point3D calculateMove(Point3D actualPosition, Point3D targetPosition){

@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cz.aimtec.hackathon.drone.R;
-
-import cz.aimtec.hackathon.drone.drone.IBebopListener;
-import cz.aimtec.hackathon.drone.drone.BebopDrone;
 import com.parrot.arsdk.arcontroller.ARCONTROLLER_DEVICE_STATE_ENUM;
 import com.parrot.arsdk.ardiscovery.ARDiscoveryDeviceService;
+
+import cz.aimtec.hackathon.drone.R;
+import cz.aimtec.hackathon.drone.drone.BebopDrone;
+import cz.aimtec.hackathon.drone.drone.IBebopListener;
 
 /**
  * Abstract activity maintaining drone connection.
