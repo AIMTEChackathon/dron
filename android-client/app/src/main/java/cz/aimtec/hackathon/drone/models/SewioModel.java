@@ -4,7 +4,7 @@ package cz.aimtec.hackathon.drone.models;
  * Created by klin on 10. 3. 2018.
  */
 
-public class SevioModel {
+public class SewioModel {
     private int id;
     private String name;
     private String vertices;
