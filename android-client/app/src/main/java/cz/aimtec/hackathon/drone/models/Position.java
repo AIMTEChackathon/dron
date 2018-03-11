@@ -15,7 +15,7 @@ public class Position {
     private List<Point3D> points;
     private Point3D centerPoint;
 
-    public Position(SevioModel m) {
+    public Position(SewioModel m) {
         id = m.getId();
         name = m.getName();
         points = new ArrayList<>(4);
@@ -23,9 +23,10 @@ public class Position {
         if (m.getVertices() != null && !m.getVertices().isEmpty()) {
             String[] offsets = m.getVertices().split(",");
             for (int pointIndex = 0; pointIndex < POINTS_COUNT * 3 - 1; pointIndex+=3) {
-                points.add(new Point3D( Float.valueOf(offsets[pointIndex]),
-                        Float.valueOf(offsets[pointIndex + 1]),
-                        Float.valueOf(offsets[pointIndex + 2])));
+                points.add(new Point3D( Float.valueOf(offsets[pointIndex]),         // x
+                                        Float.valueOf(offsets[pointIndex + 2]),     // y
+                                        Float.valueOf(offsets[pointIndex + 1])));   // Z
+                // position from sewio is returned in format x,z,y
             }
 
             centerPoint = new Point3D(  (points.get(0).getX() + points.get(2).getX()) / 2,

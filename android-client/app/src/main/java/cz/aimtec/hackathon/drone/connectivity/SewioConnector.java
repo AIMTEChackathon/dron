@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import cz.aimtec.hackathon.drone.models.Position;
-import cz.aimtec.hackathon.drone.models.SevioModel;
+import cz.aimtec.hackathon.drone.models.SewioModel;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -32,12 +32,12 @@ public class SewioConnector {
             try {
                 String response = new String(responseBody);
 
-                Type modelListType = new TypeToken<ArrayList<SevioModel>>(){}.getType();
+                Type modelListType = new TypeToken<ArrayList<SewioModel>>(){}.getType();
                 Gson gson = new Gson();
-                List<SevioModel> modelList = gson.fromJson(response, modelListType);
+                List<SewioModel> modelList = gson.fromJson(response, modelListType);
 
                 List<Position> positionList = modelList.parallelStream()
-                        .filter(m -> m.getName().startsWith("A"))
+                        .filter(m -> m.getName().startsWith("A") && m.getName().length() == 3)
                         .map(m -> new Position(m))
                         .collect(Collectors.toList());
 
