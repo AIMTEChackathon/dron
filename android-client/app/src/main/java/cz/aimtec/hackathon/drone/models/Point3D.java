@@ -38,4 +38,9 @@ public class Point3D {
     public void setZ(float z) {
         this.z = z;
     }
+
+    @Override
+    public String toString() {
+        return "x:" + x + "; y:" + y + "; z:" + z;
+    }
 }

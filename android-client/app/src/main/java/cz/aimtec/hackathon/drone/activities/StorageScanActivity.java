@@ -10,7 +10,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -32,7 +31,6 @@ import cz.aimtec.hackathon.drone.drone.DefaultBebopAdapter;
 import cz.aimtec.hackathon.drone.drone.IBebopListener;
 import cz.aimtec.hackathon.drone.drone.IBitmapResolverListener;
 import cz.aimtec.hackathon.drone.drone.IFrameListener;
-import cz.aimtec.hackathon.drone.drone.StorageScanExecutor;
 import cz.aimtec.hackathon.drone.models.Point3D;
 import cz.aimtec.hackathon.drone.models.Position;
 import cz.aimtec.hackathon.drone.models.SewioWebsocketMessageFeed;
@@ -193,6 +191,8 @@ public class StorageScanActivity extends ADroneActivity implements IFrameListene
                     public void run() {
                         ((TextView) findViewById(R.id.altitudeTextView)).setText("Alt: " + altitude);
                         Point3D position = new Point3D(0,0, (float) altitude);
+
+                        stockTakingDispatcher.onCurrentDronePositionChanged(position);
 
                         dbConnector.postPosition(getCurrentContext(), position, new AsyncHttpResponseHandlerEmpty());
                     }

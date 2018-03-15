@@ -58,7 +58,7 @@ public abstract class ADroneActivity extends AppCompatActivity
 
         drone.setMaxRotationSpeed(90);
         drone.setMaxVerticalSpeed(3);
-        drone.setMaxTilt(20);
+        drone.setMaxTilt(5);
     }
 
     public void makeToast(String message)

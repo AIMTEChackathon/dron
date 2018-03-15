@@ -24,7 +24,7 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
     private final SewioConnector sewioConnector;
     private final DBConnector dbConnector;
     private BebopDrone drone;
-    private static final float DISTANCE_DELTA_TOLLERANCE = 0.2f;
+    private static final float DISTANCE_DELTA_TOLLERANCE = 0.1f;
     private Object actualPositionLock = new Object();
     public volatile boolean isCorrectorRunning = false;
 
@@ -33,6 +33,8 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
         public void run() {
             isCorrectorRunning = true;
             while(wantedDronPosition != null){
+                System.out.println("### corrector started");
+
                 try {
                     Point3D targetPosition;
                     Point3D actualPosition;
@@ -42,10 +44,15 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
                         actualPosition = actualDronPosition;
                         distanceToTarget = distance(actualPosition, targetPosition);
                     }
+                    System.out.println("### targetPosition: " + targetPosition);
+                    System.out.println("### actualPosition: " + actualPosition);
+                    System.out.println("### distanceToTarget: " + distanceToTarget);
 
                     if(distanceToTarget > DISTANCE_DELTA_TOLLERANCE) {
                         Point3D moveToPosition = calculateMove(actualPosition, targetPosition);
-                        drone.moveToRelativePosition(moveToPosition.getX(), moveToPosition.getY(), moveToPosition.getZ(), 0);
+                        System.out.println( "### moveToPosition: " + moveToPosition);
+                        drone.moveToRelativePosition(moveToPosition.getY(), -moveToPosition.getX(), 0, 0);
+                        //drone.moveToRelativePosition(moveToPosition.getY(), -moveToPosition.getX(), moveToPosition.getZ(), 0);
                         Thread.sleep(1000);
                     } else {
                         positionReached();
@@ -93,6 +100,8 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
 
     public void positionReached() {
         if (positionReachedListener != null) {
+            System.out.println("### position reached");
+
             Position position = positions.get(wantedPositionIndex);
             positionReachedListener.onPositionReached(position, position.getCenterPoint(), wantedPositionIndex);
             positionReachedListener = null;
@@ -147,13 +156,21 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
     public void onCurrentDronePositionChanged(Point3D point) {
         synchronized (actualPositionLock) {
             if (actualDronPosition == null) {
+                System.out.println("### actualDronPosition == null");
                 actualDronPosition = point;
+                wantedDronPosition = new Point3D(actualDronPosition.getX(), actualDronPosition.getY(), actualDronPosition.getZ());
             } else {
-                actualDronPosition.setX(point.getX());
-                actualDronPosition.setY(point.getY());
+                System.out.println("### posChanged: " + actualDronPosition);
+                if (point.getZ() != 0) {
+                    actualDronPosition.setZ(point.getZ());
+                } else {
+                    actualDronPosition.setX(point.getX());
+                    actualDronPosition.setY(point.getY());
+                }
             }
         }
         if (!isCorrectorRunning) {
+            System.out.println("### start corrector");
             Thread t = new Thread(positionCorrector);
             t.start();
             try {
@@ -220,6 +237,18 @@ public class StockTakingDispatcher implements IBitmapResolverListener {
         if (!isLocked && lastQrResult.compareTo(result) != 0 && result.length() > 0) {
             qrResult = result;
             notifyThread();
+        }
+    }
+
+    public void nextPosition() {
+        if (wantedPositionIndex < positions.size() - 1) {
+            int index = wantedPositionIndex + 1;
+            goToPosition(positions.get(index), index);
+        } else {
+            synchronized (actualPositionLock) {
+                wantedDronPosition = null;
+            }
+            drone.land();
         }
     }
 }

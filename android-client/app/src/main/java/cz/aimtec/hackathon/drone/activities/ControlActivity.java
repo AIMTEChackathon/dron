@@ -53,11 +53,17 @@ public class ControlActivity extends ADroneActivity
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 super.onMessage(webSocket, text);
-                Gson gson = new Gson();
-                SewioWebsocketMessageFeed response = gson.fromJson(text, SewioWebsocketMessageFeed.class);
-                Point3D point = response.getPoint();
+                try {
+                    Gson gson = new Gson();
+                    SewioWebsocketMessageFeed response = gson.fromJson(text, SewioWebsocketMessageFeed.class);
+                    Point3D point = response.getPoint();
+                    System.out.println("### websocket message " + point);
 
-                stockTakingDispatcher.onCurrentDronePositionChanged(point);
+                    stockTakingDispatcher.onCurrentDronePositionChanged(point);
+
+                } catch (Exception e) {
+                    System.out.println("### ERROR " + e);
+                }
             }
         });
 
@@ -159,6 +165,11 @@ public class ControlActivity extends ADroneActivity
     public void startStocktakingClick(View v) {
         System.out.println("Start stocktaking clicked");
         stockTakingDispatcher.startStocktaking();
+    }
+
+    public void nextPositionClick(View v) {
+        System.out.println("next position clicked");
+        stockTakingDispatcher.nextPosition();
     }
 
     /**

@@ -257,9 +257,22 @@
         android:id="@+id/buttonStartStocktaking"
         android:layout_width="102dp"
         android:layout_height="70dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:onClick="startStocktakingClick"
         android:text="Start Stocktaking"
         android:textSize="10sp"
-        tools:layout_editor_absoluteX="174dp"
-        tools:layout_editor_absoluteY="112dp" />
+        app:layout_constraintEnd_toStartOf="@+id/button4"
+        app:layout_constraintTop_toBottomOf="@+id/landBtn" />
+
+    <Button
+        android:id="@+id/button8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="nextPositionClick"
+        android:text="Next pos"
+        app:layout_constraintEnd_toStartOf="@+id/button5"
+        app:layout_constraintTop_toBottomOf="@+id/buttonStartStocktaking" />
 </android.support.constraint.ConstraintLayout>

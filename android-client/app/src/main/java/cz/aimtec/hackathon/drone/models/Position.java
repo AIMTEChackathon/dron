@@ -23,8 +23,8 @@ public class Position {
         if (m.getVertices() != null && !m.getVertices().isEmpty()) {
             String[] offsets = m.getVertices().split(",");
             for (int pointIndex = 0; pointIndex < POINTS_COUNT * 3 - 1; pointIndex+=3) {
-                points.add(new Point3D( Float.valueOf(offsets[pointIndex]),         // x
-                                        Float.valueOf(offsets[pointIndex + 2]),     // y
+                points.add(new Point3D( -Float.valueOf(offsets[pointIndex]) -1.5f,         // x
+                                        Float.valueOf(offsets[pointIndex + 2]) - 3,     // y
                                         Float.valueOf(offsets[pointIndex + 1])));   // Z
                 // position from sewio is returned in format x,z,y
             }

@@ -13,7 +13,7 @@ import okhttp3.WebSocketListener;
 public class SewioWebSocketListener extends WebSocketListener {
     private static final int NORMAL_CLOSURE_STATUS = 1000;
     private static final String API_KEY = "171555a8fe71148a165392904";
-    private static final String TAG_ID = "13";
+    private static final String TAG_ID = "16";
 
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
@@ -22,7 +22,7 @@ public class SewioWebSocketListener extends WebSocketListener {
     }
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        Log.d("output", text);
+        //Log.d("output", text);
     }
 
     @Override
@@ -31,9 +31,11 @@ public class SewioWebSocketListener extends WebSocketListener {
                 "\"resource\":\"/feeds/" + TAG_ID + "\"}");
         webSocket.close(NORMAL_CLOSURE_STATUS, null);
         Log.d("output","Closing " + code + " / " + reason);
+        System.out.println("### Closing " + code + " / " + reason);
     }
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        Log.d("output", "Error : " + t.getMessage());
+        Log.e("output", "Error : " + t.getMessage());
+        System.out.println("### Error : " + t.getMessage());
     }
 }
