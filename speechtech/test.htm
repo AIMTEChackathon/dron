@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- 2018-03-28 author KVAJ -->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <title>test</title>
+
+    <!-- custom libraries-->
+    <script src="https://cak.zcu.cz:9444/speechcloud.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+	
+	
+        document.addEventListener("DOMContentLoaded", function() {
+		
+			var commands = {
+				"vzlétni": "START",
+				"skenuj": "SCAN",
+				"to by stačilo": "STOP"
+			};
+		
+            let ASR_GRAMMAR = `#ESGF V1.0 UTF-8 cs;
+grammar gramatika;
+public <gramatika> = (
+    vzlétni | skenuj | to by stačilo
+);
+`;
+
+            let sc_options = {
+                uri: "https://cak.zcu.cz:9443/v1/speechcloud/edu-hofmann",
+                tts: '#ttsaudio'
+            };
+            // create instance
+            let speechCloud = new SpeechCloud(sc_options);
+            let logElm = document.getElementById('log');
+
+            function logInPage(text) {
+				logElm.innerHTML = logElm.innerHTML + "<br>" + text;
+            }
+
+            document.getElementById('grammar').innerHTML = "<div>Slova použijte z následující gramatiky:</div><pre>" + ASR_GRAMMAR+"</pre>";
+
+            // asr is initialized, time to set a grammar
+            speechCloud.on("asr_initialized", function() {
+                // set ASR grammar, only ESGF format is allowed
+                speechCloud.asr_set_grammar({grammar:ASR_GRAMMAR, grammar_type:"esgf"});
+            });
+            // asr is ready and recognition can be started
+            /*speechCloud.on("asr_ready", function () { // set SLU grammar
+                //speechCloud.slu_set_grammars({grammars: GRAMMARS, process_partial_results: false, process_final_results: true});
+                logInPage("ready");
+                speechCloud.tts_synthesize({text: "Inicializace Holy 6000. Řekni, co mám udělat.", voice: "Iva210"});
+
+            });*/
+
+
+            // event with recognition results
+            speechCloud.on("asr_result", function (e) {
+                console.log(e);
+                logInPage(e.word_1best);
+				speechCloud.tts_synthesize({text: "Příkaz nerozpoznán. Nezkoušej to znovu. V neděli nepracuju.", voice: "Iva210"});
+				
+				$.ajax({type: "POST",
+						url: "https://g3d9b0efef.execute-api.eu-west-1.amazonaws.com/production/command",
+						contentType: "application/json; charset=utf-8",
+						data: JSON.stringify({ "command": commands[e.word_1best] }),
+						dataType: "json",
+						success: function() { logInPage("command send"); },
+						error: function() { logInPage("command failed"); }});
+				
+                if (!e.partial_result) { // partial results can be used, but we ignore them
+                    // ....... handle asr
+                }
+            });
+
+            // event with results from spoken language understanding
+            speechCloud.on("slu_entities", function (e) {
+                if (!e.partial_result) { // partial results can be used, but we ignore them
+                    // ....... handle slu
+                }
+
+            });
+
+            // event with detected signal
+            speechCloud.on("asr_signal", function (e) {
+                console.log(e);
+            });
+
+            // recognition stopped
+            speechCloud.on("asr_paused", function(e) {
+                
+            });
+
+            // something went wrong
+            speechCloud.on('sc_error', function (msg) {
+                console.error(msg);
+            });
+
+            // handlers are set, we can initialize speechCloud
+            speechCloud.init();
+
+			startRecording = function () {
+				speechCloud.asr_recognize();
+			};
+			
+			stopRecording = function () {
+				speechCloud.asr_pause();
+			};
+			
+			odpoved1 = function () {
+				speechCloud.tts_synthesize({text: "Já dělám na zákaznickém požadavku NOS.SUP.NEJP-0008. Je to úprava velikosti a designu reportů. Odpoledne to dodělám a pak začnu na úpravě Tásk Exekutoru pro LGT. Do psa! Do zasranýho zkurvenýho psa!", voice: "Iva210"});
+			};
+			
+			odpoved2 = function () {
+				speechCloud.tts_synthesize({text: "Neznámý příkaz. Nezkoušej to znovu. V neděli nepracuju.", voice: "Iva210"});
+			};
+        });
+		
+    </script>
+
+</head>
+<body>
+<div id="grammar"></div>
+<div id="log"></div>
+<button onclick="odpoved1();" >Start 1</button>
+<button onclick="odpoved2();" >Start 2</button>
+<audio id="ttsaudio"></audio> <!-- needed for TTS -->
+</body>
+</html>
